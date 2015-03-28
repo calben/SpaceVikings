@@ -16018,7 +16018,7 @@ MonoBehaviour:
   velocityDampingSpeed: 1
   rotationRightingSpeed: 1
   maxThrusterTime: 100
-  thrusterTimeAvailable: 5
+  thrusterTimeAvailable: 100
   verticalThrusterMultiplier: 3
   recoveryRateMultiplier: 2
   debug: 1
