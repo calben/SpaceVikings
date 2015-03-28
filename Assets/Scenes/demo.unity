@@ -15995,7 +15995,7 @@ MonoBehaviour:
   debug: 1
   padIndex: 0
   isThisMachinesPlayer: 0
-  useGamePad: 1
+  useGamePad: 0
   myCamera: {fileID: 0}
   showCrosshair: 0
   verticalTexture: {fileID: 0}
