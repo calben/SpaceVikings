@@ -246,17 +246,35 @@ public class RigidbodyNetworkedPlayerController : MonoBehaviour
     #endregion
 
     #region SettingPlayerState
-    if (this.gamepadState.LeftTrigger > 0.20f)
+    if (this.useGamePad)
     {
-      this.playerState = PlayerControllerState.AIMING;
-    }
-    else if (this.gamepadState.LeftStick)
-    {
-      this.playerState = PlayerControllerState.RUNNING;
+      if (this.gamepadState.LeftTrigger > 0.20f)
+      {
+        this.playerState = PlayerControllerState.AIMING;
+      }
+      else if (this.gamepadState.LeftStick)
+      {
+        this.playerState = PlayerControllerState.RUNNING;
+      }
+      else
+      {
+        this.playerState = PlayerControllerState.WALKING;
+      }
     }
     else
     {
-      this.playerState = PlayerControllerState.WALKING;
+      if (Input.GetMouseButton(1))
+      {
+        this.playerState = PlayerControllerState.AIMING;
+      }
+      else if (Input.GetKey(KeyCode.LeftShift))
+      {
+        this.playerState = PlayerControllerState.RUNNING;
+      }
+      else
+      {
+        this.playerState = PlayerControllerState.WALKING;
+      }
     }
     #endregion
 
