@@ -8,96 +8,101 @@ public enum NodeColliderType { Radial, Box, Custom };
 public class GravityNodeBehaviour : MonoBehaviour
 {
 
-    public float magnitudeBirth;
-    public float magnitudeDeath;
-    public float magnitudeRatio;
-    public float radiusBirth;
-    public float radiusDeath;
-    public float radiusRatio;
-    public GravityNodeType gravityType;
-    public NodeColliderType colliderType;
-    public DistanceRelationship distanceType;
+  public float magnitudeBirth;
+  public float magnitudeDeath;
+  public float magnitudeRatio;
+  public float radiusBirth;
+  public float radiusDeath;
+  public float radiusRatio;
+  public GravityNodeType gravityType;
+  public NodeColliderType colliderType;
+  public DistanceRelationship distanceType;
 
-    public bool timed;
-    public bool affectEverything;
-    public float duration;
+  public bool timed;
+  public bool affectEverything;
+  public float duration = 10f;
 
-    public float currentMagnitude;
+  public float currentMagnitude;
 
 
-    void Awake()
+  void Awake()
+  {
+    switch (colliderType)
     {
-        switch (colliderType)
-        {
-            case NodeColliderType.Radial:
-                if (this.GetComponent<SphereCollider>() == null)
-                    this.gameObject.AddComponent<SphereCollider>();
-                this.GetComponent<SphereCollider>().radius = this.radiusBirth;
-                this.GetComponent<SphereCollider>().isTrigger = true;
-                break;
-            case NodeColliderType.Box:
-                this.gameObject.AddComponent<BoxCollider>();
-                break;
-            case NodeColliderType.Custom:
-                break;
-        }
-        currentMagnitude = magnitudeBirth;
+      case NodeColliderType.Radial:
+        if (this.GetComponent<SphereCollider>() == null)
+          this.gameObject.AddComponent<SphereCollider>();
+        this.GetComponent<SphereCollider>().radius = this.radiusBirth;
+        this.GetComponent<SphereCollider>().isTrigger = true;
+        break;
+      case NodeColliderType.Box:
+        this.gameObject.AddComponent<BoxCollider>();
+        break;
+      case NodeColliderType.Custom:
+        break;
     }
+    currentMagnitude = magnitudeBirth;
+  }
 
-    /// <summary>
-    /// FOR NOW ONLY SPHERE COLLIDER WORKS, THIS IS PROBLEMATIC
-    /// </summary>
-    void FixedUpdate()
+  /// <summary>
+  /// FOR NOW ONLY SPHERE COLLIDER WORKS, THIS IS PROBLEMATIC
+  /// </summary>
+  void FixedUpdate()
+  {
+    if (timed)
     {
-        if (timed)
-        {
-            this.gameObject.GetComponent<SphereCollider>().radius = Mathf.Lerp(magnitudeBirth, magnitudeDeath, radiusRatio * Time.deltaTime);
-            currentMagnitude = Mathf.Lerp(radiusBirth, radiusDeath, radiusRatio * Time.deltaTime);
-            duration -= Time.deltaTime;
-        }
+      this.gameObject.GetComponent<SphereCollider>().radius -= radiusBirth * Time.deltaTime / duration;
+      this.magnitudeBirth -= magnitudeBirth * Time.deltaTime / duration;
+      this.gameObject.GetComponent<Light>().range -= 10.0f * Time.deltaTime;
+      duration -= Time.deltaTime;
+      if (duration < 0)
+      {
+        Destroy(this.gameObject);
+      }
     }
+  }
 
-    void OnTriggerStay(Collider other)
+  void OnTriggerStay(Collider other)
+  {
+    if (other.GetComponent<Rigidbody>().useGravity)
     {
-        if (other.GetComponent<Rigidbody>().useGravity)
-        {
-            Vector3 direction = Vector3.Normalize(other.transform.position - this.transform.position);
-            switch (gravityType)
-            {
-                case GravityNodeType.Lift:
-                    switch (distanceType)
-                    {
-                        case DistanceRelationship.Linear:
-                            other.GetComponent<Rigidbody>().AddForce(Vector3.up * (currentMagnitude / Vector3.Magnitude(other.transform.position - this.transform.position)), ForceMode.Impulse);
-                            break;
-                        case DistanceRelationship.None:
-                            other.GetComponent<Rigidbody>().AddForce(Vector3.up * (currentMagnitude), ForceMode.Impulse);
-                            break;
-                    }
-                    break;
-                case GravityNodeType.Pull:
-                    switch (distanceType)
-                    {
-                        case DistanceRelationship.Linear:
-                            other.GetComponent<Rigidbody>().AddForce(direction * (-1 * currentMagnitude / Vector3.Magnitude(other.transform.position - this.transform.position)), ForceMode.Impulse);
-                            break;
-                        case DistanceRelationship.None:
-                            other.GetComponent<Rigidbody>().AddForce(direction * (-1 * currentMagnitude), ForceMode.Impulse);
-                            break;
-                    }
-                    break;
-                case GravityNodeType.Push:
-                    switch (distanceType)
-                    {
-                        case DistanceRelationship.Linear:
-                            other.GetComponent<Rigidbody>().AddForce(direction * (currentMagnitude / Vector3.Magnitude(other.transform.position - this.transform.position)), ForceMode.Impulse);
-                            break;
-                        case DistanceRelationship.None:
-                            other.gameObject.GetComponent<Rigidbody>().AddForce(direction * (currentMagnitude), ForceMode.Impulse);
-                            break;
-                    }
-                    break;
-            }
-        }
+      Vector3 direction = Vector3.Normalize(other.transform.position - this.transform.position);
+      switch (gravityType)
+      {
+        case GravityNodeType.Lift:
+          switch (distanceType)
+          {
+            case DistanceRelationship.Linear:
+              other.GetComponent<Rigidbody>().AddForce(Vector3.up * (currentMagnitude / Vector3.Magnitude(other.transform.position - this.transform.position)), ForceMode.Impulse);
+              break;
+            case DistanceRelationship.None:
+              other.GetComponent<Rigidbody>().AddForce(Vector3.up * (currentMagnitude), ForceMode.Impulse);
+              break;
+          }
+          break;
+        case GravityNodeType.Pull:
+          switch (distanceType)
+          {
+            case DistanceRelationship.Linear:
+              other.GetComponent<Rigidbody>().AddForce(direction * (-1 * currentMagnitude / Vector3.Magnitude(other.transform.position - this.transform.position)), ForceMode.Impulse);
+              break;
+            case DistanceRelationship.None:
+              other.GetComponent<Rigidbody>().AddForce(direction * (-1 * currentMagnitude), ForceMode.Impulse);
+              break;
+          }
+          break;
+        case GravityNodeType.Push:
+          switch (distanceType)
+          {
+            case DistanceRelationship.Linear:
+              other.GetComponent<Rigidbody>().AddForce(direction * (currentMagnitude / Vector3.Magnitude(other.transform.position - this.transform.position)), ForceMode.Impulse);
+              break;
+            case DistanceRelationship.None:
+              other.gameObject.GetComponent<Rigidbody>().AddForce(direction * (currentMagnitude), ForceMode.Impulse);
+              break;
+          }
+          break;
+      }
     }
+  }
 }
