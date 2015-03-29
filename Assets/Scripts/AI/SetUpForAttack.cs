@@ -6,7 +6,7 @@ public class SetUpForAttack : MonoBehaviour
 
   public GameObject agent;
   public Vector3 goalPosition;
-  public Quaternion goalRotation;
+  public Vector3 goalForward;
   public float preferredShootingDistanceFromPlayer = 10.0f;
   public float preferredShootAngleFromPlayer = 90.0f;
 
@@ -27,13 +27,20 @@ public class SetUpForAttack : MonoBehaviour
       GameObject obj = col.collider.gameObject;
       if (obj.tag == "Player")
       {
-        this.goalPosition = MakeGoalPositionFromPlayerPosition(obj.transform.position);
+        this.goalPosition = MakeGoalPositionFromPlayerPosition(obj.transform.position, obj.transform.forward);
+        this.goalForward = MakeGoalForwardFromPlayerPosition(obj.transform.position, obj.transform.forward);
         break;
       }
     }
   }
 
-  Vector3 MakeGoalPositionFromPlayerPosition(Vector3 playerPosition)
+  Vector3 MakeGoalPositionFromPlayerPosition(Vector3 playerPosition, Vector3 playerForward)
+  {
+    Vector3 v = Vector3.zero;
+    return v;
+  }
+
+  Vector3 MakeGoalForwardFromPlayerPosition(Vector3 playerPosition, Vector3 playerForward)
   {
     Vector3 v = Vector3.zero;
     return v;
