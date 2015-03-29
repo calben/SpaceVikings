@@ -240,7 +240,6 @@ public class RigidbodyNetworkedPlayerController : MonoBehaviour
       {
         this.controllerMoveDirection = new Vector2(Input.GetAxis("Horizontal"), -Input.GetAxis("Vertical"));
         this.controllerLookDirection = new Vector2(Mathf.Clamp(Input.GetAxis("Mouse X"), -1, 1), Mathf.Clamp(Input.GetAxis("Mouse Y"), -1, 1));
-        Debug.Log(this.controllerMoveDirection.ToString());
       }
     }
     #endregion
